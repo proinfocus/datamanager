@@ -3,33 +3,33 @@ using System.Collections.Generic;
 
 namespace DataManager.Core
 {
-    public class DataManager<T> : IDataManager<T>
+    public class DataManager<T> : IDataManager<T> where T : new()
     {
-        public long Insert()
+        public long Insert(T table)
         {
             Console.WriteLine("Insert function performed.");
             return 1;
         }
 
-        public bool Update()
+        public bool Update(T table, object[] parameters = null)
         {
             Console.WriteLine("Update function performed.");
             return true;
         }
 
-        public bool Delete()
+        public bool Delete(T table, object[] parameters = null)
         {
             Console.WriteLine("Delete function performed.");
             return true;
         }
 
-        public List<T> Select<T1>(object[] parameters = null)
+        public IEnumerable<T> Select<T1>() where T1 : new()
         {
             Console.WriteLine("Select function performed.");
             return new List<T>();
         }
 
-        public List<T> Query(string query, object[] parameters = null)
+        public IEnumerable<T> Query(string query, object[] parameters = null)
         {
             Console.WriteLine("Query function performed.");
             return new List<T>();
