@@ -1,4 +1,5 @@
 ﻿using System;
+using DataManager.Core;
 
 namespace DataManager.UI
 {
@@ -6,7 +7,16 @@ namespace DataManager.UI
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            IDataManager<Dummy> database = new DataManager<Dummy>();
+            database.Query("some sql query");
+
+            Console.ReadLine();
         }
+    }
+
+    public class Dummy
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }
