@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace DataManager.Core
 {
-    public class SQLiteDataManager<T> : IDataManager<T> where T : new()
+    public class SQLServerDataManager<T> : IDataManager<T> where T : new()
     {
         private readonly string _connectionString;
 
-        public SQLiteDataManager(string connectionString)
+        public SQLServerDataManager(string connectionString)
         {
             _connectionString = connectionString;
         }
@@ -36,7 +36,7 @@ namespace DataManager.Core
         public long Insert(T table)
         {
             long output = 0;
-            using(var connection = new SQLiteConnection(_connectionString))
+            using(var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
@@ -57,7 +57,7 @@ namespace DataManager.Core
                             continue;
 
                         fields += item.Name + ",";
-                        values += "$" + item.Name + ",";
+                        values += "@" + item.Name + ",";
                     }
                 }
                 fields = fields.Length > 0 ? fields.Substring(0, fields.Length - 1) : "";
@@ -65,7 +65,7 @@ namespace DataManager.Core
                 query = query.Replace("$FIELDS$", fields);
                 query = query.Replace("$VALUES$", values);
 
-                using(var command = new SQLiteCommand(query, connection))
+                using(var command = new SqlCommand(query, connection))
                 {
                     foreach(var item in properties)
                     {
@@ -83,8 +83,8 @@ namespace DataManager.Core
                     output = command.ExecuteNonQuery() > 0 ? 1 : -1;
                     if (output == 1)
                     {
-                        command.CommandText = "SELECT last_insert_rowid()";
-                        output = (long)command.ExecuteScalar();
+                        command.CommandText = "SELECT @@IDENTITY";
+                        output = Convert.ToInt64(command.ExecuteScalar());
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace DataManager.Core
         public bool Update(T table)
         {
             bool output = false;
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
@@ -112,16 +112,16 @@ namespace DataManager.Core
                         var prop = o.GetType().GetProperty(item.Name);
                         var result = Attribute.GetCustomAttributes(prop).FirstOrDefault();
                         if (result is IsPrimaryKey)
-                            condition = item.Name + "=$" + item.Name;
+                            condition = item.Name + "=@" + item.Name;
                         else
-                            fields += item.Name + "=$" + item.Name +",";
+                            fields += item.Name + "=@" + item.Name +",";
                     }
                 }
                 fields = fields.Length > 0 ? fields.Substring(0, fields.Length - 1) : "";
                 query = query.Replace("$FIELDS$", fields);
                 query = query.Replace("$CONDITION$", condition);
 
-                using (var command = new SQLiteCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     foreach (var item in properties)
                     {
@@ -141,13 +141,13 @@ namespace DataManager.Core
         public bool Delete(T table)
         {
             bool output = false;
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
 
                 string primaryKeyField = IsPrimaryKey(table);
-                using (var command = new SQLiteCommand("DELETE FROM " + typeof(T).Name + " WHERE " + primaryKeyField + " = $" + primaryKeyField, connection))
+                using (var command = new SqlCommand("DELETE FROM " + typeof(T).Name + " WHERE " + primaryKeyField + " = @" + primaryKeyField, connection))
                 {
                     var o = new T();
                     var thisProp = o.GetType().GetProperty(primaryKeyField);
@@ -163,13 +163,13 @@ namespace DataManager.Core
         public IEnumerable<T> Select<T1>(long topRecords = 0) where T1: new()
         {
             var output = new List<T>();
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
 
-                string query = "SELECT * FROM " + typeof(T1).Name + (topRecords > 0 ? " LIMIT " + topRecords : "");
-                using (var command = new SQLiteCommand(query, connection))
+                string query = "SELECT " + (topRecords > 0 ? "TOP " + topRecords : "") + " * FROM " + typeof(T1).Name;
+                using (var command = new SqlCommand(query, connection))
                 {                    
                     var properties = typeof(T1).GetMembers();
 
@@ -197,12 +197,12 @@ namespace DataManager.Core
         public IEnumerable<T> Query(string query, object[] parameters = null)
         {
             var output = new List<T>();
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
 
-                using (var command = new SQLiteCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     if (parameters != null)
                     {
@@ -240,12 +240,12 @@ namespace DataManager.Core
         public bool NonQuery(string query, object[] parameters = null)
         {
             bool output = false;
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
 
-                using (var command = new SQLiteCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     if (parameters != null)
                     {
