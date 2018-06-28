@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using DataManager.Core;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using DataManager.Core;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 
@@ -13,11 +11,22 @@ namespace DataManager.UI
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            //string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDataManagerCS"].ToString();
-            string connectionString = ConfigurationManager.ConnectionStrings["SQLServerDataManagerCS"].ToString();
-            IDataManager<Dummy> database = new SQLServerDataManager<Dummy>(connectionString);
-            var result = database.Insert(new Dummy { Name = "Vishant Patil" });
+            //string connectionString = ConfigurationManager.ConnectionStrings["SQLServerDataManagerCS"].ToString();
+            //var database = new SQLServerDataManager<Dummy>(connectionString);
 
+            string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDataManagerCS"].ToString();
+            var database = new SQLiteDataManager<Dummy>(connectionString);
+
+            //var result = database.BulkInsert(new List<Dummy>
+            //{
+            //    new Dummy { Name = "Rahul Hadgal" },
+            //    new Dummy { Name = "Rohan Hadgal" },
+            //    new Dummy { Name = "Pranit Hadgal" },
+            //    new Dummy { Name = "Pratyusha Hadgal" }
+            //});
+
+
+            //database.NonQuery("DELETE FROM Dummy WHERE Name=@0", new object[] { "Vishant Patil" });
             //database.Delete(lastItem);
             //var output = database.Select<Dummy>();
             //var output = database.Query("select * from dummy where name like $0", new object[] { "r%" });
@@ -31,21 +40,21 @@ namespace DataManager.UI
             //}
             //database.Update(lastItem);
 
-            //output = database.Select<Dummy>(2);
             foreach (var item in output)
             {
                 Console.WriteLine(item.Id + ", " + item.Name);
             }
 
             watch.Stop();
-            Console.WriteLine(watch.Elapsed.Seconds + " second(s).");
+            Console.WriteLine("---------------------------------");
+            Console.WriteLine("Time taken: " + watch.Elapsed.Seconds + " seconds");
             Console.ReadLine();
         }
     }
 
     public class Dummy
     {
-        [IsPrimaryKey(Value = true)]
+        [PrimaryKey]
         public int Id { get; set; }
 
         public string Name { get; set; }

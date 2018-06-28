@@ -3,8 +3,7 @@
 namespace DataManager.Core
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class IsPrimaryKey : Attribute
+    public class PrimaryKey : Attribute
     {
-        public bool Value { get; set; }
     }
 }
