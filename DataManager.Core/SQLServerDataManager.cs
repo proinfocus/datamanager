@@ -35,14 +35,14 @@ namespace DataManager.Core
 
             var properties = typeof(T).GetMembers();
             var o = new T();
-            foreach (var item in properties)
+            foreach (var property in properties)
             {
-                if (item.MemberType == System.Reflection.MemberTypes.Property)
+                if (property.MemberType == System.Reflection.MemberTypes.Property)
                 {
-                    var prop = o.GetType().GetProperty(item.Name);
+                    var prop = o.GetType().GetProperty(property.Name);
                     var result = Attribute.GetCustomAttributes(prop).FirstOrDefault();
                     if (result is PrimaryKey)
-                        return item.Name;
+                        return property.Name;
                 }
             }
             return output;
@@ -69,16 +69,16 @@ namespace DataManager.Core
                 string values = "";
                 string primaryKey = GetPrimaryKey(table);
 
-                foreach (var item in properties)
+                foreach (var property in properties)
                 {
-                    if (item.MemberType == System.Reflection.MemberTypes.Property)
+                    if (property.MemberType == System.Reflection.MemberTypes.Property)
                     {
-                        var prop = o.GetType().GetProperty(item.Name);
-                        if (item.Name == primaryKey)
+                        var prop = o.GetType().GetProperty(property.Name);
+                        if (property.Name == primaryKey)
                             continue;
 
-                        fields += item.Name + ",";
-                        values += "@" + item.Name + ",";
+                        fields += property.Name + ",";
+                        values += "@" + property.Name + ",";
                     }
                 }
                 fields = fields.Length > 0 ? fields.Substring(0, fields.Length - 1) : "";
@@ -88,15 +88,15 @@ namespace DataManager.Core
 
                 using(var command = new SqlCommand(query, connection))
                 {
-                    foreach(var item in properties)
+                    foreach(var property in properties)
                     {
-                        if (item.MemberType == System.Reflection.MemberTypes.Property)
+                        if (property.MemberType == System.Reflection.MemberTypes.Property)
                         {
-                            var prop = o.GetType().GetProperty(item.Name);
-                            if (item.Name == primaryKey)
+                            var prop = o.GetType().GetProperty(property.Name);
+                            if (property.Name == primaryKey)
                                 continue;
 
-                            command.Parameters.AddWithValue(item.Name, prop.GetValue(table, null));
+                            command.Parameters.AddWithValue(property.Name, prop.GetValue(table, null));
                         }
                     }
 
@@ -130,17 +130,17 @@ namespace DataManager.Core
                 var o = new T();
                 string fields = "";
                 string values = "";
-                foreach (var item in properties)
+                foreach (var property in properties)
                 {
-                    if (item.MemberType == System.Reflection.MemberTypes.Property)
+                    if (property.MemberType == System.Reflection.MemberTypes.Property)
                     {
-                        var prop = o.GetType().GetProperty(item.Name);
+                        var prop = o.GetType().GetProperty(property.Name);
                         var result = Attribute.GetCustomAttributes(prop).FirstOrDefault();
                         if (result is PrimaryKey)
                             continue;
 
-                        fields += item.Name + ",";
-                        values += "@" + item.Name + ",";
+                        fields += property.Name + ",";
+                        values += "@" + property.Name + ",";
                     }
                 }
                 fields = fields.Length > 0 ? fields.Substring(0, fields.Length - 1) : "";
@@ -153,16 +153,16 @@ namespace DataManager.Core
                     foreach (var data in table)
                     {
                         command.Parameters.Clear();
-                        foreach (var item in properties)
+                        foreach (var property in properties)
                         {
-                            if (item.MemberType == System.Reflection.MemberTypes.Property)
+                            if (property.MemberType == System.Reflection.MemberTypes.Property)
                             {
-                                var prop = o.GetType().GetProperty(item.Name);
+                                var prop = o.GetType().GetProperty(property.Name);
                                 var result = Attribute.GetCustomAttributes(prop).FirstOrDefault();
                                 if (result is PrimaryKey)
                                     continue;
 
-                                command.Parameters.AddWithValue(item.Name, prop.GetValue(data, null));
+                                command.Parameters.AddWithValue(property.Name, prop.GetValue(data, null));
                             }
                         }
                         output = command.ExecuteNonQuery() > 0 ? 1 : -1;
@@ -199,15 +199,15 @@ namespace DataManager.Core
                 string condition = "";
                 string primaryKey = GetPrimaryKey(table);
 
-                foreach (var item in properties)
+                foreach (var property in properties)
                 {
-                    if (item.MemberType == System.Reflection.MemberTypes.Property)
+                    if (property.MemberType == System.Reflection.MemberTypes.Property)
                     {
-                        var prop = o.GetType().GetProperty(item.Name);
-                        if (item.Name == primaryKey)
-                            condition = item.Name + "=@" + item.Name;
+                        var prop = o.GetType().GetProperty(property.Name);
+                        if (property.Name == primaryKey)
+                            condition = property.Name + "=@" + property.Name;
                         else
-                            fields += item.Name + "=@" + item.Name +",";
+                            fields += property.Name + "=@" + property.Name +",";
                     }
                 }
                 fields = fields.Length > 0 ? fields.Substring(0, fields.Length - 1) : "";
@@ -216,12 +216,12 @@ namespace DataManager.Core
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    foreach (var item in properties)
+                    foreach (var property in properties)
                     {
-                        if (item.MemberType == System.Reflection.MemberTypes.Property)
+                        if (property.MemberType == System.Reflection.MemberTypes.Property)
                         {
-                            var prop = o.GetType().GetProperty(item.Name);
-                            command.Parameters.AddWithValue(item.Name, prop.GetValue(table, null));
+                            var prop = o.GetType().GetProperty(property.Name);
+                            command.Parameters.AddWithValue(property.Name, prop.GetValue(table, null));
                         }
                     }
 
@@ -282,12 +282,12 @@ namespace DataManager.Core
                         while (reader.Read())
                         {
                             var o = new T();
-                            foreach (var item in properties)
+                            foreach (var property in properties)
                             {
-                                if (item.MemberType == System.Reflection.MemberTypes.Property)
+                                if (property.MemberType == System.Reflection.MemberTypes.Property)
                                 {
-                                    var prop = o.GetType().GetProperty(item.Name);
-                                    prop.SetValue(o, Convert.ChangeType(reader[item.Name], prop.PropertyType), null);
+                                    var prop = o.GetType().GetProperty(property.Name);
+                                    prop.SetValue(o, Convert.ChangeType(reader[property.Name], prop.PropertyType), null);
                                 }
                             }
                             output.Add(o);
@@ -331,12 +331,12 @@ namespace DataManager.Core
                         var o = new T();
                         while (reader.Read())
                         {
-                            foreach (var item in properties)
+                            foreach (var property in properties)
                             {
-                                if (item.MemberType == System.Reflection.MemberTypes.Property)
+                                if (property.MemberType == System.Reflection.MemberTypes.Property)
                                 {
-                                    var prop = o.GetType().GetProperty(item.Name);
-                                    prop.SetValue(o, Convert.ChangeType(reader[item.Name], prop.PropertyType), null);
+                                    var prop = o.GetType().GetProperty(property.Name);
+                                    prop.SetValue(o, Convert.ChangeType(reader[property.Name], prop.PropertyType), null);
                                 }
                             }
                             output.Add(o);
