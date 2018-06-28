@@ -6,7 +6,7 @@ namespace DataManager.UI
     public class ICDLogin
     {
         [PrimaryKey]
-		public long Id { get; set; }
+        public long Id { get; set; }
         public string MemberName { get; set; }
         public string MemberNo { get; set; }
         public string OldMemberNo { get; set; }
