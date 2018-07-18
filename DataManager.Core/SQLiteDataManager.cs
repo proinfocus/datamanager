@@ -24,31 +24,6 @@ namespace DataManager.Core
         }
 
         /// <summary>
-        /// Get the object property which is defined as Primary Key
-        /// for using it for Inserts, Updates and Deletes.
-        /// </summary>
-        /// <param name="table">Tablename to find the Primary Key from</param>
-        /// <returns>The name of the property which is marked as Primary Key attribute</returns>
-        private string GetPrimaryKey(T table)
-        {
-            string output = "";
-
-            var properties = typeof(T).GetMembers();
-            var o = new T();
-            foreach (var property in properties)
-            {
-                if (property.MemberType == System.Reflection.MemberTypes.Property)
-                {
-                    var prop = o.GetType().GetProperty(property.Name);
-                    var result = Attribute.GetCustomAttributes(prop).FirstOrDefault();
-                    if (result is PrimaryKey)
-                        return property.Name;
-                }
-            }
-            return output;
-        }
-
-        /// <summary>
         /// Insert data passed as the parameter.
         /// </summary>
         /// <param name="table">Instance of object having data with name and structure</param>
@@ -67,7 +42,7 @@ namespace DataManager.Core
                 var o = new T();
                 string fields = "";
                 string values = "";
-                string primaryKey = GetPrimaryKey(table);
+                string primaryKey = DataManagerHelper<T>.GetPrimaryKey(table);
 
                 foreach (var property in properties)
                 {
@@ -130,7 +105,7 @@ namespace DataManager.Core
                 var o = new T();
                 string fields = "";
                 string values = "";
-                string primaryKey = GetPrimaryKey(table.FirstOrDefault());
+                string primaryKey = DataManagerHelper<T>.GetPrimaryKey(table.FirstOrDefault());
 
                 foreach (var property in properties)
                 {
@@ -197,7 +172,7 @@ namespace DataManager.Core
                 var o = new T();
                 string fields = "";
                 string condition = "";
-                string primaryKey = GetPrimaryKey(table);
+                string primaryKey = DataManagerHelper<T>.GetPrimaryKey(table);
 
                 foreach (var property in properties)
                 {
@@ -244,7 +219,7 @@ namespace DataManager.Core
                 if (connection.State != System.Data.ConnectionState.Open)
                     connection.Open();
 
-                string primaryKeyField = GetPrimaryKey(table);
+                string primaryKeyField = DataManagerHelper<T>.GetPrimaryKey(table);
                 using (var command = new SQLiteCommand("DELETE FROM " + typeof(T).Name + " WHERE " + primaryKeyField + " = $" + primaryKeyField, connection))
                 {
                     var o = new T();
