@@ -53,7 +53,7 @@ namespace DataManager.Core
         IEnumerable<T> Query(string query, object[] parameters = null);
 
         /// <summary>
-        /// Execute a query which doesn't returns data.
+        /// Execute a query which doesn't return data.
         /// </summary>
         /// <param name="query">Query to execute</param>
         /// <param name="parameters">Values to be passed for any parameters used.</param>
