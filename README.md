@@ -1,7 +1,7 @@
 # DataManager
 Core data management project that can be used to inject any Database and/or File system to perform the CRUD operations in any of the supported environment.
 
-# Core Methods
+## Core Methods
 - Insert > insert object values to the chosen destination which includes Database and/or File system.
 - BulkInsert > insert list of object values to the chosen destination.
 - Update > update object values.
