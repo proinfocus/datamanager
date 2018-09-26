@@ -14,4 +14,4 @@ Core data management project that can be used to inject any Database and/or File
 Add this if you want to use this library with MS SQL Server.
 
 ## Proinfocus.DataManager.SQLite
-Add this if you want to use this library with SQLite.
+Add this if you want to use this library with SQLite. You may require to add System.Data.SQLite library to use this.
