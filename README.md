@@ -17,4 +17,4 @@ Add this if you want to use this library with MS SQL Server.
 Add this if you want to use this library with SQLite. You may require to add System.Data.SQLite library to use this.
 
 ## Things to note
-Make sure to add `[PrimaryKey]` attribute to your model which is a primary key in the database. This attribute is is namespace **Proinfocus.DataManager**
+Make sure to add `[PrimaryKey]` attribute to your model which is a primary key in the database. This attribute is in the namespace **Proinfocus.DataManager**
